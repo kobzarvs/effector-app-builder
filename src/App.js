@@ -12,7 +12,7 @@ import {
 import {GeneralLayout} from './layouts/GeneralLayout'
 import {Dashboard} from './pages/Dashboard'
 import {PageNotFound} from './pages/PageNotFound'
-
+import './App.css'
 
 const {SubMenu} = Menu
 const {Header, Content, Sider} = Layout

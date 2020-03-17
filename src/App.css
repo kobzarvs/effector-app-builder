@@ -36,3 +36,9 @@
     transform: rotate(360deg);
   }
 }
+
+.sider {
+  background-color: white;
+  height: calc(100vh - 64px);
+  border-right: 1px solid red;
+}

@@ -3936,10 +3936,10 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
 
-effector-dom@^0.0.15:
-  version "0.0.15"
-  resolved "https://registry.yarnpkg.com/effector-dom/-/effector-dom-0.0.15.tgz#42992f0e2cd8e4d0d3f9384253281706b5486dc5"
-  integrity sha512-smr9IvxIEezINFsYNlRmIMbNQ5HRUihioLukC39dn1WyX6CXxjuTSv1X4VNeMlnROpvjEAKqq+GdB+vQq3O6oA==
+effector-react@^20.6.3:
+  version "20.6.3"
+  resolved "https://registry.yarnpkg.com/effector-react/-/effector-react-20.6.3.tgz#f276a3478886b3be487cc1e1bc4ab29938b6af4e"
+  integrity sha512-3cONEJA9TXL4ofVYoNqO8kf6KxA8hKs+S46ZE1Enjzq4PB8AmDuMKlbXdwEidaj4ti4aS2TmsEhI5OTLluKB0A==
 
 effector@^20.12.2:
   version "20.12.2"

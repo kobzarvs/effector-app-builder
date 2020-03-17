@@ -12,7 +12,7 @@
     "babel-plugin-import": "^1.13.0",
     "customize-cra": "^0.9.1",
     "effector": "^20.12.2",
-    "effector-dom": "^0.0.15",
+    "effector-react": "^20.6.3",
     "eslint": "^6.8.0",
     "react": "^16.13.0",
     "react-app-rewired": "^2.1.5",
