@@ -6,15 +6,20 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "@xstyled/styled-components": "^1.17.0",
     "antd": "^4.0.3",
     "antd-dayjs-webpack-plugin": "^0.0.8",
     "babel-plugin-import": "^1.13.0",
     "customize-cra": "^0.9.1",
+    "effector": "^20.12.2",
+    "effector-dom": "^0.0.15",
     "eslint": "^6.8.0",
     "react": "^16.13.0",
     "react-app-rewired": "^2.1.5",
     "react-dom": "^16.13.0",
-    "react-scripts": "3.4.0"
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "3.4.0",
+    "styled-components": "^5.0.1"
   },
   "scripts": {
     "start": "react-app-rewired start",
