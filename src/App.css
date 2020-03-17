@@ -40,5 +40,20 @@
 .sider {
   background-color: white;
   height: calc(100vh - 64px);
-  border-right: 1px solid red;
+  border-right: 1px solid #ccc;
+  box-shadow: 2px 0 6px rgba(0, 0, 0, .15);
+}
+
+.right-sider {
+  background-color: white;
+  height: calc(100vh - 64px);
+  border-left: 1px solid #ccc;
+  box-shadow: -2px 0 6px rgba(0, 0, 0, .15);
+}
+
+.header {
+  background-color: lightsteelblue;
+  height: 40px;
+  margin: 0;
+  padding: 5px 12px;
 }

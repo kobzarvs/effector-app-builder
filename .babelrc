@@ -1,0 +1,25 @@
+{
+  "env": {
+    "development": {
+      "plugins": [
+        [
+          "effector/babel-plugin",
+          {
+            "addLoc": true
+          }
+        ],
+        "effector/babel-plugin-react",
+        [
+          "transform-rename-import",
+          {
+            "original": "effector",
+            "replacement": "effector-logger"
+          }
+        ]
+      ],
+      "ignore": [
+        "effector"
+      ]
+    }
+  }
+}

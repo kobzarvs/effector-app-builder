@@ -1,21 +1,10 @@
 import React from 'react'
-import {Layout, Menu, Breadcrumb} from 'antd'
-import {UserOutlined, LaptopOutlined, NotificationOutlined} from '@ant-design/icons'
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
-  useRouteMatch,
-  useParams, Redirect,
-} from 'react-router-dom'
-import {GeneralLayout} from './layouts/GeneralLayout'
+import {Layout, Menu} from 'antd'
+import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom'
 import {Dashboard} from './pages/Dashboard'
 import {PageNotFound} from './pages/PageNotFound'
 import './App.css'
 
-const {SubMenu} = Menu
-const {Header, Content, Sider} = Layout
 
 export const App = () => (
   <Router>

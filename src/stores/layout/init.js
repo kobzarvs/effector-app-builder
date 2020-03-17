@@ -1,5 +1,6 @@
-import {closeRightSider, openRightSider, selectObject, toggleRightSider} from './index'
+import {closeRightSider, openRightSider, toggleRightSider} from './index'
 import {$rightSider} from './state'
+import {selectObject} from '../model'
 
 
 $rightSider

@@ -3,15 +3,14 @@ import {Dropdown, Menu, Tree} from 'antd'
 import {
   ApartmentOutlined,
   AppstoreOutlined,
-  CarryOutOutlined,
-  FormOutlined,
   FunctionOutlined,
   NodeExpandOutlined,
   ThunderboltOutlined,
 } from '@ant-design/icons'
 import {useStore} from 'effector-react'
-import {createStore} from 'effector'
-import {toggleRightSider} from '../../stores/layout'
+import {openRightSider} from '../../stores/layout'
+import {selectObject} from '../../stores/model'
+import {$model} from '../../stores/model/state'
 
 
 const domainContextMenu = (
@@ -34,86 +33,105 @@ const storeContextMenu = (
   </Menu>
 )
 
+const eventsContextMenu = (
+  <Menu>
+    <Menu.Item key="1">Create</Menu.Item>
+  </Menu>
+)
+
+const eventContextMenu = (
+  <Menu>
+    <Menu.Item key="3">Rename</Menu.Item>
+    <Menu.Item key="2">Delete</Menu.Item>
+  </Menu>
+)
+
+const effectsContextMenu = (
+  <Menu>
+    <Menu.Item key="1">Create</Menu.Item>
+  </Menu>
+)
+
+const effectContextMenu = (
+  <Menu>
+    <Menu.Item key="3">Rename</Menu.Item>
+    <Menu.Item key="2">Delete</Menu.Item>
+  </Menu>
+)
+
+const processesContextMenu = (
+  <Menu>
+    <Menu.Item key="1">Create</Menu.Item>
+  </Menu>
+)
+
+const processContextMenu = (
+  <Menu>
+    <Menu.Item key="3">Rename</Menu.Item>
+    <Menu.Item key="2">Delete</Menu.Item>
+  </Menu>
+)
+
+
 const TreeItem = ({title, menu, icon}) => (
   <Dropdown overlay={menu} trigger={['contextMenu']}>
     <div>{icon} {title}</div>
   </Dropdown>
 )
 
-const $store = createStore([
-  {
-    title: <TreeItem title="Default Domain" menu={domainContextMenu} icon={<ApartmentOutlined/>}/>,
-    key: '0-0',
-    children: [
-      {
-        title: (
-          <TreeItem title="Stores" menu={storesContextMenu} icon={<AppstoreOutlined/>}/>
-        ),
-        key: '0-0-0',
-        children: [
-          { title: <TreeItem title="$store1" menu={storeContextMenu}/>, key: "0-0-0-0" },
-          { title: <TreeItem title="$store2" menu={storeContextMenu}/>, key: "0-0-0-1" },
-          { title: <TreeItem title="$store3" menu={storeContextMenu}/>, key: "0-0-0-2" },
-        ],
-      },
+const menus = {
+  domain: domainContextMenu,
+  stores: storesContextMenu,
+  store: storeContextMenu,
+  events: eventsContextMenu,
+  event: eventContextMenu,
+  effects: effectsContextMenu,
+  effect: effectContextMenu,
+  processes: processesContextMenu,
+  process: processContextMenu,
+}
 
-      {
-        title: 'Events',
-        key: '0-0-1',
-        icon: <ThunderboltOutlined/>,
-        children: [{title: 'leaf', key: '0-0-1-0', icon: <CarryOutOutlined/>}],
-      },
+const icons = {
+  domain: <ApartmentOutlined/>,
+  stores: <AppstoreOutlined/>,
+  store: undefined,
+  events: <ThunderboltOutlined/>,
+  event: undefined,
+  effects: <FunctionOutlined/>,
+  effect: undefined,
+  processes: <NodeExpandOutlined/>,
+  process: undefined,
+}
 
-      {
-        title: 'Effects',
-        key: '0-0-2',
-        icon: <FunctionOutlined/>,
-        children: [
-          {title: 'leaf', key: '0-0-2-0', icon: <CarryOutOutlined/>},
-          {
-            title: 'leaf',
-            key: '0-0-2-1',
-            icon: <CarryOutOutlined/>,
-            switcherIcon: <FormOutlined/>,
-          },
-        ],
-      },
-
-      {
-        title: 'Processes',
-        key: '0-0-3',
-        icon: <NodeExpandOutlined/>,
-        children: [
-          {title: 'leaf', key: '0-0-2-0', icon: <CarryOutOutlined/>},
-          {
-            title: 'leaf',
-            key: '0-0-2-1',
-            icon: <CarryOutOutlined/>,
-            switcherIcon: <FormOutlined/>,
-          },
-        ],
-      },
-    ],
-  },
-])
+const transformData = (data) => {
+  return data.map(item => ({
+    type: item.type,
+    key: item.id,
+    title: (
+      <TreeItem
+        title={`${item.title}${item.children ? ` (${item.children.length})` : ''}`}
+        menu={menus[item.type]}
+        icon={icons[item.type]}
+      />
+    ),
+    children: item.children && transformData(item.children),
+  }))
+}
 
 export const ObjectList = () => {
-  const data = useStore($store)
-  const onSelect = useCallback((...vals) => {
-    console.log(vals)
-    toggleRightSider()
+  const data = transformData(useStore($model))
+  const onSelect = useCallback(id => {
+    console.log(id)
+    selectObject(id)
+    openRightSider()
   }, [])
 
   return (
     <Tree
-      // showLine={true}
       showIcon={true}
-      defaultExpandedKeys={['0-0-0']}
+      defaultExpandAll
       onSelect={onSelect}
       treeData={data}
-      // onRightClick={(e, node) => {
-      //   console.log(e, node)
-      // }}
     />
   )
 }
