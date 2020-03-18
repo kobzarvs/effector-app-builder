@@ -1,6 +1,7 @@
 import React, {useCallback} from 'react'
 import {Button, Dropdown, Menu} from 'antd'
 import {DownOutlined, UndoOutlined, RedoOutlined} from '@ant-design/icons'
+import {toggleShowDeps} from '../../stores/layout'
 
 
 const AddMenu = ({onSelect}) => (
@@ -32,6 +33,8 @@ export const Toolbar = () => {
         {' '}
         <Button icon={<UndoOutlined style={{color: 'blue'}}/>}>Undo</Button>
         <Button icon={<RedoOutlined style={{color: 'blue'}}/>}>Redo</Button>
+        {' '}
+        <Button onClick={toggleShowDeps}>Toggle deps</Button>
       </div>
       <div>
         <Button type="danger">Clear</Button>

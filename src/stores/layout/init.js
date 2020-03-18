@@ -1,5 +1,5 @@
-import {closeRightSider, openRightSider, toggleRightSider} from './index'
-import {$rightSider} from './state'
+import {closeRightSider, openRightSider, toggleRightSider, toggleShowDeps} from './index'
+import {$rightSider, $showDeps} from './state'
 import {selectObject} from '../model'
 
 
@@ -8,3 +8,6 @@ $rightSider
   .on(closeRightSider, state => false)
   .on(openRightSider, state => true)
   .on(selectObject, () => true)
+
+$showDeps
+  .on(toggleShowDeps, state => !state)

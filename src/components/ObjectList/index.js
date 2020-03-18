@@ -15,7 +15,9 @@ import {useStore} from 'effector-react'
 import {openRightSider} from '../../stores/layout'
 import {selectObject} from '../../stores/model'
 import {$model} from '../../stores/model/state'
-import {$flattenModel} from '../../stores/model/init'
+import {$flattenModel, $taggedModel} from '../../stores/model/init'
+import {omit, uniq, uniqBy} from 'ramda'
+import {$showDeps} from '../../stores/layout/state'
 
 
 const domainContextMenu = (
@@ -99,12 +101,18 @@ const menus = {
   sample: processContextMenu,
   watch: processContextMenu,
   on: processContextMenu,
+  combine: processContextMenu,
+  restore: processContextMenu,
+  map: processContextMenu,
 }
 
 const icons = {
   model: <ApartmentOutlined/>,
   stores: <FolderOutlined/>,
   store: <AppstoreOutlined/>,
+  combine: <AppstoreOutlined/>,
+  map: <AppstoreOutlined/>,
+  restore: <AppstoreOutlined/>,
   events: <FolderOutlined/>,
   event: <ThunderboltOutlined/>,
   effects: <FolderOutlined/>,
@@ -123,11 +131,15 @@ const findTargets = (id, tree) => {
 
 const typeColors = {
   on: 'green',
+  event: '#87d068',
   source: 'geekblue',
   sample: 'purple',
   target: 'red',
   watch: 'orange',
   clock: 'blue',
+  combine: 'darkcyan',
+  restore: '#999',
+  map: 'darkgreen',
 }
 
 const resultColors = {
@@ -135,20 +147,25 @@ const resultColors = {
   store: '#108ee9',
 }
 
-const tagStyle = {padding: '0 3px', margin: '0 2px', height: 18, fontSize: 10}
+const tagStyle = {padding: '0 4px', margin: '0 2px', height: 18, fontSize: 10, borderRadius: 3}
 
 const tagsTypes = ['on', 'sample', 'merge', 'guard', 'combine', 'restore', 'split', 'forward', 'watch']
 
 const ItemTitle = ({item, parent, flattenModel}) => {
+  let tagged = false
   return (
     <>
       {item.title}{item.children ? ` (${item.children.length})` : ''}
       {' '}
+
+      {/* process type */}
       {tagsTypes.includes(item.type) && (
         <Tag color={typeColors[item.type]} style={tagStyle}>
           {item.type}
         </Tag>
       )}
+
+      {/* Кем является родитель для текущего элемента */}
       {parent && Object.keys(item).map((key, idx) => {
         return parent.id === item[key] && (
           <Tag color={typeColors[key]} style={tagStyle} key={idx}>
@@ -156,6 +173,15 @@ const ItemTitle = ({item, parent, flattenModel}) => {
           </Tag>
         )
       })}
+
+      {parent && parent.type === 'combine' && item.tag && (
+        <>
+          <Tag color={typeColors[item.tag]} style={tagStyle}>
+            {item.tag}
+          </Tag>
+        </>
+      )}
+
       {parent && Object.keys(parent).map((key, idx) => {
         return item.id === parent[key] && (
           <Tag color={typeColors[key]} style={tagStyle} key={idx}>
@@ -166,9 +192,17 @@ const ItemTitle = ({item, parent, flattenModel}) => {
 
       {item.type === 'sample' && item.target && (
         <>
-          <ArrowRightOutlined style={{ margin: '0 5px' }}/>
+          <ArrowRightOutlined style={{margin: '0 5px'}}/>
           <Tag color={resultColors[flattenModel[item.target].type]} style={tagStyle}>
             {flattenModel[item.target].type}
+          </Tag>
+        </>
+      )}
+
+      {item.type === 'map' && (
+        <>
+          <Tag color={typeColors['map']} style={tagStyle}>
+            map
           </Tag>
         </>
       )}
@@ -176,20 +210,12 @@ const ItemTitle = ({item, parent, flattenModel}) => {
   )
 }
 
-const transformData = (data, flattenModel, level = '0', parent) => {
+const transformData = (data, flattenModel, level = '0', parent, showDeps) => {
   if (!data) return []
 
   return data.map((item, idx) => {
-    let tags = []
-    const deps = Object.values(flattenModel)
-      .filter(item2 => {
-        tags = Object.keys(item2).filter(prop => prop !== 'id' && item2.id !== item.id && item2[prop] === item.id)
-        return tags.length > 0
-      })
-      .map(i => {
-        const {children, ...base} = i
-        return base
-      })
+    let deps = []
+    if (showDeps) deps = item.tag ? [] : flattenModel[item.id].tags.map(d => omit(['children', 'tags'], {...d.item, tag: d.tag}))
 
     return ({
       type: item.type,
@@ -202,26 +228,34 @@ const transformData = (data, flattenModel, level = '0', parent) => {
           icon={icons[item.type]}
         />
       ),
-      children: transformData(deps.concat(item.children || []), flattenModel, `${level}_${idx}`, item),
+      children: transformData(
+        uniqBy(i => i.id, tagsTypes.includes(item.type) ? (deps).concat(item.children || []) : (item.children || []).concat(deps)),
+        flattenModel, `${level}_${idx}`,
+        item,
+        showDeps
+      ),
     })
   })
 }
 
 export const ObjectList = () => {
-  const flattenModel = useStore($flattenModel)
-  const data = transformData(useStore($model), flattenModel)
+  const showDeps = useStore($showDeps)
+  const flattenModel = useStore($taggedModel)
+  const data = transformData(useStore($model), flattenModel, '0', undefined, showDeps)
 
   const onSelect = useCallback((id, {node}) => {
     selectObject(node.id)
     openRightSider()
   }, [])
 
+  console.log(showDeps)
   return (
     <Tree
       showIcon={true}
       defaultExpandAll
       onSelect={onSelect}
       treeData={data}
+      style={{ width: 1200 }}
     />
   )
 }

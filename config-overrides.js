@@ -11,7 +11,7 @@ const AntdDayjsWebpackPlugin = require('antd-dayjs-webpack-plugin')
 
 module.exports = override(
   disableEsLint(),
-  useBabelRc(),
+  // useBabelRc(),
   fixBabelImports('import', {
     libraryName: 'antd',
     libraryDirectory: 'es',

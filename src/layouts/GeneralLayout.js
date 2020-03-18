@@ -26,7 +26,7 @@ export const GeneralLayout = ({children}) => {
       </Header>
       <Toolbar/>
       <Layout>
-        <Sider width={400} className="sider">
+        <Sider width={500} className="sider">
           <ObjectList/>
         </Sider>
         <Layout>

@@ -22,7 +22,7 @@ export const $model = createStore([
               {
                 type: 'event', title: 'submit', id: 'root_models_todos_submit',
                 children: [
-                  {type: 'watch', title: 'prevent default', id: 'root_models_todos_submit_watch1' }
+                  {type: 'watch', title: 'prevent default', id: 'root_models_todos_submit_watch1'},
                 ],
               },
               {
@@ -32,10 +32,10 @@ export const $model = createStore([
                   {type: 'on', title: 'remove', id: 'root_models_todos_remove1'},
                   {type: 'on', title: 'change', id: 'root_models_todos_change1'},
                   {type: 'on', title: 'reset', id: 'root_models_todos_reset1'},
-                ]
+                ],
               },
               {
-                type: 'store', title: '$input', id: 'root_models_todos_$input', value: ''
+                type: 'store', title: '$input', id: 'root_models_todos_$input', value: '',
               },
               {
                 type: 'sample',
@@ -43,8 +43,30 @@ export const $model = createStore([
                 id: 'root_models_todos_input_sample1',
                 source: 'root_models_todos_$input',
                 clock: 'root_models_todos_submit',
+                // target: 'root_models_todos_submit',
                 target: 'root_models_todos_insert',
-              }
+              },
+              {
+                type: 'combine',
+                title: '$combinedStore',
+                id: '$combinedStore',
+                stores: ['root_models_todos_$todos', 'root_models_todos_$input'],
+                children: [
+                  {
+                    type: 'map', id: '$mappedStore2', title: '$mappedStore2', value: null,
+                    children: [
+                      {type: 'on', title: 'reset', id: 'root_models_todos_reset1'},
+                    ],
+                  },
+                ],
+              },
+              {
+                type: 'restore',
+                title: '$restoredStore',
+                id: '$restoredStore',
+                event: 'root_models_todos_$input',
+                defaultState: undefined,
+              },
             ],
           },
         ],
