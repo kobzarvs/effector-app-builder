@@ -122,7 +122,7 @@ const icons = {
   processes: <FolderOutlined/>,
   process: <NodeExpandOutlined/>,
   folder: <FolderOutlined/>,
-  sample: <NodeExpandOutlined/>,
+  sample: <ThunderboltOutlined/>,
   watch: <EyeOutlined/>,
   on: <ThunderboltOutlined/>,
   deps: <LinkOutlined/>,
@@ -143,6 +143,7 @@ const typeColors = {
   combine: 'darkcyan',
   restore: '#999',
   map: 'darkgreen',
+  store: '#108ee9',
 }
 
 const resultColors = {
@@ -160,12 +161,11 @@ const StyledTag = styled(Tag)`
   text-align: center;
 `
 
-const preTypes = ['on', 'watch', 'map']
-const tagsTypes = ['sample', 'merge', 'guard', 'split', 'forward']
-const storeTypes = ['combine', 'restore', 'store']
+const preTypes = ['on', 'watch']
+const tagsTypes = ['map','sample', 'merge', 'guard', 'split', 'forward']
+const storeTypes = ['combine', 'restore']
 
 const ItemTitle = ({item, parent, flattenModel}) => {
-  let tagged = false
   return (
     <>
       {/* pre type */}
@@ -207,7 +207,7 @@ const ItemTitle = ({item, parent, flattenModel}) => {
       {' '}
 
       {/* process type */}
-      {tagsTypes.includes(item.type) && (
+      {(tagsTypes.includes(item.type) || storeTypes.includes(item.type)) && (
         <StyledTag color={typeColors[item.type]}>
           {item.type}
         </StyledTag>
@@ -218,6 +218,15 @@ const ItemTitle = ({item, parent, flattenModel}) => {
           <ArrowRightOutlined style={{margin: '0 5px'}}/>
           <StyledTag color={resultColors[flattenModel[item.target].type]}>
             {flattenModel[item.target].type}
+          </StyledTag>
+        </>
+      )}
+
+      {(item.type === 'combine' || item.type === 'map' || item.type === 'restore') && (
+        <>
+          <ArrowRightOutlined style={{margin: '0 5px'}}/>
+          <StyledTag color={resultColors.store}>
+            store
           </StyledTag>
         </>
       )}
@@ -247,7 +256,6 @@ const transformData = (data, flattenModel, level = '0', parent, showDeps, filter
         <TreeItem
           title={<ItemTitle item={item} parent={parent} flattenModel={flattenModel}/>}
           menu={menus[item.type]}
-          // icon={icons[item.type]}
         />
       ),
       children: transformData(
