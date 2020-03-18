@@ -13,16 +13,6 @@ export const $model = createStore([
         type: 'folder', id: 'nodels', title: 'models',
         children: [
           {
-            type: 'model', id: 'project_models_layout', title: 'layout',
-            children: [
-              {type: 'event', title: 'event1', id: 'root_events_event1'},
-              {type: 'effect', title: 'effect1', id: 'root_effects_effect1'},
-              {type: 'store', title: '$store1', id: 'root_stores_$store1', value: {'name': 'John', 'age': '28'}},
-              {type: 'store', title: '$store2', id: 'root_stores_$store2', value: undefined},
-              {type: 'process', title: 'process1', id: 'root_processes_process1'},
-            ],
-          },
-          {
             type: 'model', id: 'root_models_todos', title: 'todos',
             children: [
               {type: 'event', title: 'insert', id: 'root_models_todos_insert'},
@@ -45,17 +35,16 @@ export const $model = createStore([
                 ]
               },
               {
-                type: 'store', title: '$input', id: 'root_models_todos_$input', value: '',
-                children: [
-                  {
-                    type: 'sample',
-                    title: 'add new item',
-                    id: 'root_models_todos_input_sample1',
-                    clock: 'root_models_todos_submit',
-                    target: 'root_models_todos_insert',
-                  }
-                ],
+                type: 'store', title: '$input', id: 'root_models_todos_$input', value: ''
               },
+              {
+                type: 'sample',
+                title: 'add new item',
+                id: 'root_models_todos_input_sample1',
+                source: 'root_models_todos_$input',
+                clock: 'root_models_todos_submit',
+                target: 'root_models_todos_insert',
+              }
             ],
           },
         ],

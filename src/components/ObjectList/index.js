@@ -1,6 +1,7 @@
 import React, {useCallback} from 'react'
 import {Dropdown, Menu, Tag, Tree} from 'antd'
 import {
+  ArrowRightOutlined,
   EyeOutlined,
   PullRequestOutlined,
   ApartmentOutlined,
@@ -84,6 +85,8 @@ const TreeItem = ({title, menu, icon}) => (
 )
 
 const menus = {
+  folder: domainContextMenu,
+  domain: domainContextMenu,
   model: domainContextMenu,
   stores: storesContextMenu,
   store: storeContextMenu,
@@ -93,6 +96,9 @@ const menus = {
   effect: effectContextMenu,
   processes: processesContextMenu,
   process: processContextMenu,
+  sample: processContextMenu,
+  watch: processContextMenu,
+  on: processContextMenu,
 }
 
 const icons = {
@@ -120,14 +126,20 @@ const typeColors = {
   source: 'geekblue',
   sample: 'purple',
   target: 'red',
-  watch: 'orange'
+  watch: 'orange',
+  clock: 'blue',
+}
+
+const resultColors = {
+  event: '#87d068',
+  store: '#108ee9',
 }
 
 const tagStyle = {padding: '0 3px', margin: '0 2px', height: 18, fontSize: 10}
 
-const tagsTypes = ['on', 'sample', 'merge', 'guard', 'combine', 'restore', 'split', 'forward']
+const tagsTypes = ['on', 'sample', 'merge', 'guard', 'combine', 'restore', 'split', 'forward', 'watch']
 
-const ItemTitle = ({item, parent}) => {
+const ItemTitle = ({item, parent, flattenModel}) => {
   return (
     <>
       {item.title}{item.children ? ` (${item.children.length})` : ''}
@@ -151,6 +163,15 @@ const ItemTitle = ({item, parent}) => {
           </Tag>
         )
       })}
+
+      {item.type === 'sample' && item.target && (
+        <>
+          <ArrowRightOutlined style={{ margin: '0 5px' }}/>
+          <Tag color={resultColors[flattenModel[item.target].type]} style={tagStyle}>
+            {flattenModel[item.target].type}
+          </Tag>
+        </>
+      )}
     </>
   )
 }
@@ -159,10 +180,16 @@ const transformData = (data, flattenModel, level = '0', parent) => {
   if (!data) return []
 
   return data.map((item, idx) => {
-    const sources = flattenModel.filter(i => i.target === item.id).map(i => {
-      const {children, ...base} = i
-      return base
-    })
+    let tags = []
+    const deps = Object.values(flattenModel)
+      .filter(item2 => {
+        tags = Object.keys(item2).filter(prop => prop !== 'id' && item2.id !== item.id && item2[prop] === item.id)
+        return tags.length > 0
+      })
+      .map(i => {
+        const {children, ...base} = i
+        return base
+      })
 
     return ({
       type: item.type,
@@ -170,23 +197,21 @@ const transformData = (data, flattenModel, level = '0', parent) => {
       key: `${level}_${idx}`,
       title: (
         <TreeItem
-          title={<ItemTitle item={item} parent={parent}/>}
+          title={<ItemTitle item={item} parent={parent} flattenModel={flattenModel}/>}
           menu={menus[item.type]}
           icon={icons[item.type]}
         />
       ),
-      children: transformData(sources.concat(item.children || []), flattenModel, `${level}_${idx}`, item),
+      children: transformData(deps.concat(item.children || []), flattenModel, `${level}_${idx}`, item),
     })
   })
 }
 
 export const ObjectList = () => {
   const flattenModel = useStore($flattenModel)
-  console.log('flat', flattenModel)
-  const data = transformData(useStore($model), Object.values(flattenModel))
+  const data = transformData(useStore($model), flattenModel)
 
   const onSelect = useCallback((id, {node}) => {
-    console.log(id, node.id)
     selectObject(node.id)
     openRightSider()
   }, [])
