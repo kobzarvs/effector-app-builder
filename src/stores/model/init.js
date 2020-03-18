@@ -1,6 +1,7 @@
 import {createStore, restore, sample} from 'effector'
 import {$model, $selectedObject} from './state'
 import {selectObject} from './index'
+import {attachLogger} from 'effector-logger/attach'
 
 
 const flatData = (data, result = {}) => {
@@ -17,7 +18,11 @@ const flatData = (data, result = {}) => {
   }, result)
 }
 
-const $flattenModel = $model.map(model => flatData(model))
+export const $flattenModel = $model.map(model => flatData(model))
+
+$flattenModel.watch(state => {
+  console.log(state)
+})
 
 sample({
   source: $flattenModel,

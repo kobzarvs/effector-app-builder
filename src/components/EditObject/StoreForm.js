@@ -1,7 +1,40 @@
 import React, {useState} from 'react'
-import {Form, Input, Button, Checkbox} from 'antd'
+import {Form, Input, Button, Checkbox, Table} from 'antd'
 import {closeRightSider} from '../../stores/layout'
 
+
+// const columns = [
+//   {
+//     title: 'Source name',
+//     dataIndex: 'title',
+//     key: 'name',
+//   },
+//   {
+//     title: 'Source type',
+//     dataIndex: 'type',
+//     key: 'type',
+//     render: type => {
+//       switch(type) {
+//
+//       }
+//       return (
+//         <span>
+//         {tags.map(tag => {
+//           let color = tag.length > 5 ? 'geekblue' : 'green';
+//           if (tag === 'loser') {
+//             color = 'volcano';
+//           }
+//           return (
+//             <Tag color={color} key={tag}>
+//               {tag.toUpperCase()}
+//             </Tag>
+//           );
+//         })}
+//       </span>
+//       )
+//     },
+//   },
+// ]
 
 export const StoreForm = ({data}) => {
   const [undefinedValue, setUndefinedValue] = useState(typeof data.value === 'undefined')
@@ -50,20 +83,26 @@ export const StoreForm = ({data}) => {
           },
         ]}
       >
-        <Input.TextArea style={{fontFamily: 'monospace'}} disabled={undefinedValue} rows={10}/>
+        <Input.TextArea style={{fontFamily: 'monospace'}} disabled={undefinedValue} rows={6}/>
       </Form.Item>
 
       <Form.Item name="undefinedValue" valuePropName="checked">
         <Checkbox onChange={handleChangeUndefinedValue}>undefined value</Checkbox>
       </Form.Item>
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+      <Form.Item
+        label="Dependencies"
+      >
+        {/*<Table columns={columns} dataSource={dataSource}/>*/}
+      </Form.Item>
+
+      <div style={{display: 'flex', justifyContent: 'flex-end'}}>
         <Form.Item>
           <Button onClick={closeRightSider}>
             Cancel
           </Button>
         </Form.Item>
-        <div style={{ width: 10 }}></div>
+        <div style={{width: 10}}/>
         <Form.Item>
           <Button type="primary" htmlType="submit">
             Submit

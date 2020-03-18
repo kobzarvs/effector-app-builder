@@ -1,16 +1,20 @@
 import React, {useCallback} from 'react'
-import {Dropdown, Menu, Tree} from 'antd'
+import {Dropdown, Menu, Tag, Tree} from 'antd'
 import {
+  EyeOutlined,
+  PullRequestOutlined,
   ApartmentOutlined,
   AppstoreOutlined,
   FunctionOutlined,
   NodeExpandOutlined,
   ThunderboltOutlined,
+  FolderOutlined,
 } from '@ant-design/icons'
 import {useStore} from 'effector-react'
 import {openRightSider} from '../../stores/layout'
 import {selectObject} from '../../stores/model'
 import {$model} from '../../stores/model/state'
+import {$flattenModel} from '../../stores/model/init'
 
 
 const domainContextMenu = (
@@ -80,7 +84,7 @@ const TreeItem = ({title, menu, icon}) => (
 )
 
 const menus = {
-  domain: domainContextMenu,
+  model: domainContextMenu,
   stores: storesContextMenu,
   store: storeContextMenu,
   events: eventsContextMenu,
@@ -92,37 +96,98 @@ const menus = {
 }
 
 const icons = {
-  domain: <ApartmentOutlined/>,
-  stores: <AppstoreOutlined/>,
-  store: undefined,
-  events: <ThunderboltOutlined/>,
-  event: undefined,
-  effects: <FunctionOutlined/>,
-  effect: undefined,
-  processes: <NodeExpandOutlined/>,
-  process: undefined,
+  model: <ApartmentOutlined/>,
+  stores: <FolderOutlined/>,
+  store: <AppstoreOutlined/>,
+  events: <FolderOutlined/>,
+  event: <ThunderboltOutlined/>,
+  effects: <FolderOutlined/>,
+  effect: <FunctionOutlined/>,
+  processes: <FolderOutlined/>,
+  process: <NodeExpandOutlined/>,
+  folder: <FolderOutlined/>,
+  sample: <PullRequestOutlined/>,
+  watch: <EyeOutlined/>,
+  on: <ThunderboltOutlined/>,
 }
 
-const transformData = (data) => {
-  return data.map(item => ({
-    type: item.type,
-    key: item.id,
-    title: (
-      <TreeItem
-        title={`${item.title}${item.children ? ` (${item.children.length})` : ''}`}
-        menu={menus[item.type]}
-        icon={icons[item.type]}
-      />
-    ),
-    children: item.children && transformData(item.children),
-  }))
+const findTargets = (id, tree) => {
+  return []
+}
+
+const typeColors = {
+  on: 'green',
+  source: 'geekblue',
+  sample: 'purple',
+  target: 'red',
+  watch: 'orange'
+}
+
+const tagStyle = {padding: '0 3px', margin: '0 2px', height: 18, fontSize: 10}
+
+const tagsTypes = ['on', 'sample', 'merge', 'guard', 'combine', 'restore', 'split', 'forward']
+
+const ItemTitle = ({item, parent}) => {
+  return (
+    <>
+      {item.title}{item.children ? ` (${item.children.length})` : ''}
+      {' '}
+      {tagsTypes.includes(item.type) && (
+        <Tag color={typeColors[item.type]} style={tagStyle}>
+          {item.type}
+        </Tag>
+      )}
+      {parent && Object.keys(item).map((key, idx) => {
+        return parent.id === item[key] && (
+          <Tag color={typeColors[key]} style={tagStyle} key={idx}>
+            {key}
+          </Tag>
+        )
+      })}
+      {parent && Object.keys(parent).map((key, idx) => {
+        return item.id === parent[key] && (
+          <Tag color={typeColors[key]} style={tagStyle} key={idx}>
+            {key}
+          </Tag>
+        )
+      })}
+    </>
+  )
+}
+
+const transformData = (data, flattenModel, level = '0', parent) => {
+  if (!data) return []
+
+  return data.map((item, idx) => {
+    const sources = flattenModel.filter(i => i.target === item.id).map(i => {
+      const {children, ...base} = i
+      return base
+    })
+
+    return ({
+      type: item.type,
+      id: item.id,
+      key: `${level}_${idx}`,
+      title: (
+        <TreeItem
+          title={<ItemTitle item={item} parent={parent}/>}
+          menu={menus[item.type]}
+          icon={icons[item.type]}
+        />
+      ),
+      children: transformData(sources.concat(item.children || []), flattenModel, `${level}_${idx}`, item),
+    })
+  })
 }
 
 export const ObjectList = () => {
-  const data = transformData(useStore($model))
-  const onSelect = useCallback(id => {
-    console.log(id)
-    selectObject(id)
+  const flattenModel = useStore($flattenModel)
+  console.log('flat', flattenModel)
+  const data = transformData(useStore($model), Object.values(flattenModel))
+
+  const onSelect = useCallback((id, {node}) => {
+    console.log(id, node.id)
+    selectObject(node.id)
     openRightSider()
   }, [])
 

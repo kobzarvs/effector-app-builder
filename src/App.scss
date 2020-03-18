@@ -1,3 +1,5 @@
+$header-height: 40px;
+
 .App {
   text-align: center;
 }
@@ -39,21 +41,35 @@
 
 .sider {
   background-color: white;
-  height: calc(100vh - 64px);
+  height: calc(100vh - 73px);
   border-right: 1px solid #ccc;
-  box-shadow: 2px 0 6px rgba(0, 0, 0, .15);
+  box-shadow: 2px 4px 6px rgba(0, 0, 0, .15);
 }
 
 .right-sider {
   background-color: white;
-  height: calc(100vh - 64px);
+  height: calc(100vh - 73px);
   border-left: 1px solid #ccc;
-  box-shadow: -2px 0 6px rgba(0, 0, 0, .15);
+  box-shadow: -2px 4px 6px rgba(0, 0, 0, .15);
 }
 
 .header {
-  background-color: lightsteelblue;
+  background-color: #5f6a81;
+  color: white;
   height: 40px;
   margin: 0;
   padding: 5px 12px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.toolbar {
+  border-bottom: 1px solid #ccc;
+  background-color: #e9e9e9;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
 }

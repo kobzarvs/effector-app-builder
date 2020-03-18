@@ -12,6 +12,16 @@ export const EditObject = () => {
 
   console.log(selectedObject)
 
+  const content = () => {
+    switch(selectedObject.type) {
+      case 'store':
+        return <StoreForm key={selectedObject.id} data={selectedObject}/>
+
+      default:
+        return <pre>{JSON.stringify(selectedObject, null, 2)}</pre>
+    }
+  }
+
   return (
     <>
       <div style={{padding: 20}}>
@@ -19,9 +29,7 @@ export const EditObject = () => {
           {selectedObject.type.toUpperCase()} PROPERTIES
         </Typography.Title>
 
-        {selectedObject.type === 'store' && (
-          <StoreForm key={selectedObject.id} data={selectedObject}/>
-        )}
+        {content()}
       </div>
     </>
   )

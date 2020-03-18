@@ -1,5 +1,6 @@
 import React from 'react'
 import {Button, Layout, Menu, Typography} from 'antd'
+import {UserOutlined} from '@ant-design/icons'
 import {ObjectList} from '../components/ObjectList'
 import {Toolbar} from '../components/Toolbar'
 import {useStore} from 'effector-react'
@@ -17,14 +18,18 @@ export const GeneralLayout = ({children}) => {
   return (
     <Layout>
       <Header className="header">
-        <Typography.Title level={3} style={{ color: '#333' }}>Effector App Builder</Typography.Title>
+        <div style={{ fontSize: '1.5em' }}>Effector App Builder</div>
+        <div>
+          <UserOutlined style={{ marginRight: 5 }}/>
+          example@gmail.com
+        </div>
       </Header>
+      <Toolbar/>
       <Layout>
-        <Sider width={300} className="sider">
+        <Sider width={400} className="sider">
           <ObjectList/>
         </Sider>
         <Layout>
-          <Toolbar/>
           <Content
             className="site-layout-background"
             style={{
@@ -35,7 +40,6 @@ export const GeneralLayout = ({children}) => {
             }}
           >
             {children}
-            <Button onClick={toggleRightSider}>Toggle</Button>
           </Content>
         </Layout>
         <Sider width={400} className="right-sider" collapsed={!rightSider} collapsedWidth={0}>
