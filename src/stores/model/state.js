@@ -25,6 +25,8 @@ export const $model = createStore([
                   {type: 'watch', title: 'prevent default', id: 'root_models_todos_submit_watch1'},
                 ],
               },
+              {type: 'effect', title: 'loadTodos', id: 'loadTodos'},
+              {type: 'effect', title: 'saveTodos', id: 'saveTodos'},
               {
                 type: 'store', title: '$todos', id: 'root_models_todos_$todos', value: ['hello, world!'],
                 children: [

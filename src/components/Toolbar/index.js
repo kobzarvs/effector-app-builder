@@ -33,8 +33,6 @@ export const Toolbar = () => {
         {' '}
         <Button icon={<UndoOutlined style={{color: 'blue'}}/>}>Undo</Button>
         <Button icon={<RedoOutlined style={{color: 'blue'}}/>}>Redo</Button>
-        {' '}
-        <Button onClick={toggleShowDeps}>Toggle deps</Button>
       </div>
       <div>
         <Button type="danger">Clear</Button>

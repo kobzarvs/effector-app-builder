@@ -1,6 +1,7 @@
-import React, {useCallback} from 'react'
-import {Dropdown, Menu, Tag, Tree} from 'antd'
+import React, {useCallback, useState} from 'react'
+import {Button, Dropdown, Menu, Input, Tag, Tree} from 'antd'
 import {
+  LinkOutlined,
   ArrowRightOutlined,
   EyeOutlined,
   PullRequestOutlined,
@@ -12,12 +13,13 @@ import {
   FolderOutlined,
 } from '@ant-design/icons'
 import {useStore} from 'effector-react'
-import {openRightSider} from '../../stores/layout'
+import {openRightSider, toggleShowDeps} from '../../stores/layout'
 import {selectObject} from '../../stores/model'
 import {$model} from '../../stores/model/state'
 import {$flattenModel, $taggedModel} from '../../stores/model/init'
 import {omit, uniq, uniqBy} from 'ramda'
 import {$showDeps} from '../../stores/layout/state'
+import styled from '@xstyled/styled-components'
 
 
 const domainContextMenu = (
@@ -120,9 +122,10 @@ const icons = {
   processes: <FolderOutlined/>,
   process: <NodeExpandOutlined/>,
   folder: <FolderOutlined/>,
-  sample: <PullRequestOutlined/>,
+  sample: <NodeExpandOutlined/>,
   watch: <EyeOutlined/>,
   on: <ThunderboltOutlined/>,
+  deps: <LinkOutlined/>,
 }
 
 const findTargets = (id, tree) => {
@@ -147,75 +150,94 @@ const resultColors = {
   store: '#108ee9',
 }
 
-const tagStyle = {padding: '0 4px', margin: '0 2px', height: 18, fontSize: 10, borderRadius: 3}
+const StyledTag = styled(Tag)`
+  padding: 0 4px;
+  margin: 0 2px;
+  height: 18px;
+  font-size: 10px;
+  border-radius: 3px;
+  width: 45px;
+  text-align: center;
+`
 
-const tagsTypes = ['on', 'sample', 'merge', 'guard', 'combine', 'restore', 'split', 'forward', 'watch']
+const preTypes = ['on', 'watch', 'map']
+const tagsTypes = ['sample', 'merge', 'guard', 'split', 'forward']
+const storeTypes = ['combine', 'restore', 'store']
 
 const ItemTitle = ({item, parent, flattenModel}) => {
   let tagged = false
   return (
     <>
-      {item.title}{item.children ? ` (${item.children.length})` : ''}
-      {' '}
-
-      {/* process type */}
-      {tagsTypes.includes(item.type) && (
-        <Tag color={typeColors[item.type]} style={tagStyle}>
+      {/* pre type */}
+      {preTypes.includes(item.type) && (
+        <StyledTag color={typeColors[item.type]} tag={item.type}>
           {item.type}
-        </Tag>
+        </StyledTag>
       )}
 
       {/* Кем является родитель для текущего элемента */}
       {parent && Object.keys(item).map((key, idx) => {
         return parent.id === item[key] && (
-          <Tag color={typeColors[key]} style={tagStyle} key={idx}>
+          <StyledTag color={typeColors[key]} key={idx}>
             {key}
-          </Tag>
+          </StyledTag>
+        )
+      })}
+
+      {parent && Object.keys(parent).map((key, idx) => {
+        return item.id === parent[key] && (
+          <StyledTag color={typeColors[key]} key={idx}>
+            {key}
+          </StyledTag>
         )
       })}
 
       {parent && parent.type === 'combine' && item.tag && (
         <>
-          <Tag color={typeColors[item.tag]} style={tagStyle}>
+          <StyledTag color={typeColors[item.tag]}>
             {item.tag}
-          </Tag>
+          </StyledTag>
         </>
       )}
+      {' '}
 
-      {parent && Object.keys(parent).map((key, idx) => {
-        return item.id === parent[key] && (
-          <Tag color={typeColors[key]} style={tagStyle} key={idx}>
-            {key}
-          </Tag>
-        )
-      })}
+      {icons[item.type]}
+      {' '}
+      {item.title}{item.children ? ` (${item.children.length})` : ''}
+      {' '}
+
+      {/* process type */}
+      {tagsTypes.includes(item.type) && (
+        <StyledTag color={typeColors[item.type]}>
+          {item.type}
+        </StyledTag>
+      )}
 
       {item.type === 'sample' && item.target && (
         <>
           <ArrowRightOutlined style={{margin: '0 5px'}}/>
-          <Tag color={resultColors[flattenModel[item.target].type]} style={tagStyle}>
+          <StyledTag color={resultColors[flattenModel[item.target].type]}>
             {flattenModel[item.target].type}
-          </Tag>
-        </>
-      )}
-
-      {item.type === 'map' && (
-        <>
-          <Tag color={typeColors['map']} style={tagStyle}>
-            map
-          </Tag>
+          </StyledTag>
         </>
       )}
     </>
   )
 }
 
-const transformData = (data, flattenModel, level = '0', parent, showDeps) => {
+const transformData = (data, flattenModel, level = '0', parent, showDeps, filter, filterPass = true) => {
   if (!data) return []
 
   return data.map((item, idx) => {
     let deps = []
-    if (showDeps) deps = item.tag ? [] : flattenModel[item.id].tags.map(d => omit(['children', 'tags'], {...d.item, tag: d.tag}))
+    if (showDeps) deps = item.tag
+      ? []
+      : flattenModel[item.id].tags.map(d => omit(['children', 'tags'], {...d.item, tag: d.tag}))
+
+    if (filter.hasOwnProperty(item.type) && !filter[item.type]) return null
+    if (!filter.store && storeTypes.includes(item.type)) return null
+    if (!filter.process && tagsTypes.includes(item.type)) return null
+    if (item.type !== 'folder' && item.type !== 'model' && filter.title && item.title.toLowerCase().indexOf(filter.title.toLowerCase()) === -1) return null
 
     return ({
       type: item.type,
@@ -225,37 +247,66 @@ const transformData = (data, flattenModel, level = '0', parent, showDeps) => {
         <TreeItem
           title={<ItemTitle item={item} parent={parent} flattenModel={flattenModel}/>}
           menu={menus[item.type]}
-          icon={icons[item.type]}
+          // icon={icons[item.type]}
         />
       ),
       children: transformData(
         uniqBy(i => i.id, tagsTypes.includes(item.type) ? (deps).concat(item.children || []) : (item.children || []).concat(deps)),
         flattenModel, `${level}_${idx}`,
         item,
-        showDeps
+        showDeps,
+        filter,
+        filterPass,
       ),
     })
-  })
+  }).filter(Boolean)
 }
 
 export const ObjectList = () => {
   const showDeps = useStore($showDeps)
   const flattenModel = useStore($taggedModel)
-  const data = transformData(useStore($model), flattenModel, '0', undefined, showDeps)
+  const [filter, setFilter] = useState({
+    event: true,
+    effect: true,
+    store: true,
+    process: true,
+    title: '',
+  })
+  const data = transformData(useStore($model), flattenModel, '0', undefined, showDeps, filter)
 
   const onSelect = useCallback((id, {node}) => {
     selectObject(node.id)
     openRightSider()
   }, [])
 
-  console.log(showDeps)
+  const handleChange = (e) => setFilter({...filter, title: e.target.value})
+
   return (
-    <Tree
-      showIcon={true}
-      defaultExpandAll
-      onSelect={onSelect}
-      treeData={data}
-      style={{ width: 1200 }}
-    />
+    <>
+      <div style={{display: 'flex', justifyContent: 'space-between'}}>
+        <Input.Search placeholder="Search" onChange={handleChange} style={{flex: '1 0 300px'}}/>
+        <Button.Group>
+          <Button icon={icons['event']} type={filter.event && 'primary'}
+                  onClick={() => setFilter({...filter, event: !filter.event})}/>
+          <Button icon={icons['effect']} type={filter.effect && 'primary'}
+                  onClick={() => setFilter({...filter, effect: !filter.effect})}/>
+          <Button icon={icons['store']} type={filter.store && 'primary'}
+                  onClick={() => setFilter({...filter, store: !filter.store})}/>
+          <Button icon={icons['process']} type={filter.process && 'primary'}
+                  onClick={() => setFilter({...filter, process: !filter.process})}/>
+          <Button icon={icons['deps']} type={showDeps && 'primary'} onClick={toggleShowDeps}/>
+        </Button.Group>
+      </div>
+
+      <div style={{ overflow: 'auto', height: 'calc(100vh - 73px - 32px)' }}>
+        <Tree
+          showIcon={true}
+          defaultExpandAll
+          onSelect={onSelect}
+          treeData={data}
+          style={{width: 1200}}
+        />
+      </div>
+    </>
   )
 }
