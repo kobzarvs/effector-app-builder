@@ -5,7 +5,7 @@ export const $selectedObject = createStore(null)
 
 export const $model = createStore([
   {
-    type: 'folder',
+    type: 'root',
     title: 'Project',
     id: 'root',
     children: [

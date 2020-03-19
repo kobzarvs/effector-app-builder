@@ -1,5 +1,4 @@
 import React from 'react'
-import {Layout, Menu} from 'antd'
 import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom'
 import {Dashboard} from './pages/Dashboard'
 import {PageNotFound} from './pages/PageNotFound'
