@@ -38,6 +38,9 @@ export const $model = createStore([
               },
               {
                 type: 'store', title: '$input', id: 'root_models_todos_$input', value: '',
+                children: [
+                  {type: 'map', title: '$upperCaseInput', id: '$upperCaseInput' }
+                ]
               },
               {
                 type: 'sample',
@@ -55,7 +58,7 @@ export const $model = createStore([
                 stores: ['root_models_todos_$todos', 'root_models_todos_$input'],
                 children: [
                   {
-                    type: 'map', id: '$mappedStore2', title: '$mappedStore2', value: null,
+                    type: 'map', id: '$mappedStore2', title: '$mappedStore2',
                     children: [
                       {type: 'on', title: 'reset', id: 'root_models_todos_reset1'},
                     ],
@@ -66,7 +69,7 @@ export const $model = createStore([
                 type: 'restore',
                 title: '$restoredStore',
                 id: '$restoredStore',
-                event: 'root_models_todos_$input',
+                event: 'root_models_todos_insert',
                 defaultState: undefined,
               },
             ],

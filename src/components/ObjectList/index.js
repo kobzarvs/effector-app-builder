@@ -168,6 +168,11 @@ const storeTypes = ['combine', 'restore']
 const ItemTitle = ({item, parent, flattenModel}) => {
   return (
     <>
+      {icons[item.type]}
+      {' '}
+      {item.title}{item.children ? ` (${item.children.length})` : ''}
+      {' '}
+
       {/* pre type */}
       {preTypes.includes(item.type) && (
         <StyledTag color={typeColors[item.type]} tag={item.type}>
@@ -199,11 +204,6 @@ const ItemTitle = ({item, parent, flattenModel}) => {
           </StyledTag>
         </>
       )}
-      {' '}
-
-      {icons[item.type]}
-      {' '}
-      {item.title}{item.children ? ` (${item.children.length})` : ''}
       {' '}
 
       {/* process type */}
