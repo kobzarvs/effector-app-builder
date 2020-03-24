@@ -6,6 +6,7 @@ import {createEffectModel} from './createEffectModel'
 import {createDomainModel} from './createDomainModel'
 import {createCombineModel} from './createCombineModel'
 import {createFunctionModel} from './createFunctionModel'
+import {remove} from './index'
 
 
 export const createModel = () => ({
@@ -17,7 +18,10 @@ export const createModel = () => ({
     {name: 'Model name', key: 'name', type: 'string', required: true},
   ],
   create,
+  remove,
   cmd: [
+    DIVIDER,
+
     createEventModel(),
     createStoreModel(),
     createEffectModel(),

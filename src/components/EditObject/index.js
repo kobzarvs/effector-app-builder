@@ -1,7 +1,7 @@
 import React from 'react'
 import {Typography} from 'antd'
 import {useStore} from 'effector-react'
-import {$selectedObject} from '../../stores/model/state'
+import {$selectedObject} from '../../stores/layout/state'
 import {StoreForm} from './StoreForm'
 import {groupBy, omit, values} from 'ramda'
 import {UnitForm} from './UnitForm'
@@ -14,10 +14,11 @@ export const EditObject = () => {
   const selectedObject = useStore($selectedObject)
   const flattenModel = useStore($flattenModel)
 
-  if (!selectedObject) return null
+  if (!selectedObject || !flattenModel[selectedObject]) return null
+  const item = flattenModel[selectedObject]
 
   const content = () => {
-    switch (selectedObject.context) {
+    switch (item.context) {
       case 'root': {
         const groups = groupBy(item => item.type, values(flattenModel))
         // console.log(groups)
@@ -25,16 +26,16 @@ export const EditObject = () => {
       }
 
       case 'root.createModel.createStore':
-        return <StoreForm key={selectedObject.id} data={selectedObject} />
+        return <StoreForm key={selectedObject} data={item} />
 
       case 'root.createModel':
       case 'root.createModel.createEvent':
       case 'root.createModel.createFunc':
       case 'root.createModel.createDomain':
-        return <UnitForm key={selectedObject.id} data={selectedObject} />
+        return <UnitForm key={selectedObject} data={item} />
 
       default:
-        return <pre>{JSON.stringify(omit(['parent', 'tags', 'children'], selectedObject), null, 2)}</pre>
+        return <pre>{JSON.stringify(omit(['parent', 'tags', 'children'], item), null, 2)}</pre>
     }
   }
 
@@ -42,7 +43,7 @@ export const EditObject = () => {
     <>
       <div style={{padding: 20, background: 'rgba(0, 0, 0, .04)', height: '100%'}}>
         <Typography.Title level={4} style={{marginBottom: 30}}>
-          {effectorModel[selectedObject.context].label.toUpperCase()} PROPERTIES
+          {effectorModel[item.context].label.toUpperCase()} PROPERTIES
         </Typography.Title>
 
         {content()}

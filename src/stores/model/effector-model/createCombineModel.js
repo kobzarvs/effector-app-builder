@@ -1,9 +1,5 @@
 import {v4 as uuidv4} from 'uuid'
 import {getNewName} from './index'
-import {createEventModel} from './createEventModel'
-import {createStoreModel} from './createStoreModel'
-import {createEffectModel} from './createEffectModel'
-import {createDomainModel} from './createDomainModel'
 
 
 export const createCombineModel = () => ({
@@ -25,7 +21,7 @@ const create = ({parent, data}) => {
     type: 'store',
     children: [],
     parent: parent.id,
-    context: 'root.createModel',
+    context: 'root.createModel.combine',
   }
   newData[parent.id].children.push(newItem)
   return {data: newData, item: newItem}

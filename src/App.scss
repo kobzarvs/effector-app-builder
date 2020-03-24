@@ -1,5 +1,9 @@
 :root {
   --primary: #1890ff;
+  --shadow-offset: 2px;
+  --shadow-splash: 6px;
+  --shadow-color: #ccc;
+  --AppBar-height: 73px;
 }
 
 $header-height: 40px;
@@ -46,17 +50,18 @@ $header-height: 40px;
 .left-sider {
   background-color: white;
   height: calc(100vh - 73px);
-  border-right: 1px solid #ccc;
-  box-shadow: 2px 4px 6px rgba(0, 0, 0, .15);
+  border-right: 1px solid #aaa;
+  box-shadow: var(--shadow-offset) 0 var(--shadow-splash) var(--shadow-color);
   overflow: hidden;
 }
 
 .right-sider {
   background-color: white;
   height: calc(100vh - 73px);
-  border-left: 1px solid #ccc;
-  box-shadow: -2px 4px 6px rgba(0, 0, 0, .15);
+  border-left: 1px solid #aaa;
+  box-shadow: calc(-1 * var(--shadow-offset)) 0 var(--shadow-splash) var(--shadow-color);
   overflow: auto;
+  min-width: 400px;
 }
 
 .header {
@@ -72,12 +77,14 @@ $header-height: 40px;
 }
 
 .toolbar {
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #aaa;
   background-color: #e9e9e9;
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0 var(--shadow-offset) var(--shadow-splash) var(--shadow-color);
+  z-index: 10;
 }
 
 .ant-dropdown-menu-item-active {

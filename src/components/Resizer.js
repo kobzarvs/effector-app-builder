@@ -1,6 +1,7 @@
-import React, {useEffect, useRef} from 'react'
+import React, {useCallback, useEffect, useRef} from 'react'
 import styled from '@xstyled/styled-components'
 import {debounce} from 'lodash'
+import {attachLogger} from 'effector-logger/attach'
 
 
 const setBorder = dir => props => props.direction === dir && `1px solid ${props.border}`
@@ -69,7 +70,7 @@ export const Resizer = ({
 }) => {
   const ref = useRef(null)
 
-  const handleMouseMove = e => {
+  const handleMouseMove = useCallback(e => {
     params.newCursor = (direction === 'vertical' ? e.pageX : e.pageY)
     const shift = params.newCursor - params.start
     const dir = Math.sign(params.lastCursor - params.newCursor)
@@ -87,16 +88,16 @@ export const Resizer = ({
       save && saveSettings(save, result)
     })
     params.lastCursor = params.newCursor
-  }
+  }, [min, max])
 
-  const handleMouseUp = e => {
+  const handleMouseUp = useCallback(e => {
     document.removeEventListener('mousemove', handleMouseMove)
     document.removeEventListener('mouseup', handleMouseUp)
     document.body.removeChild(background)
     document.body.style['user-select'] = bodyUserSelect
-  }
+  }, [handleMouseMove, bodyUserSelect])
 
-  const handleMouseDown = e => {
+  const handleMouseDown = useCallback(e => {
     if (e.button !== 0 || e.shiftKey || e.altKey || e.ctrlKey || e.metaKey) return
 
     background.style.cursor = cursor || (direction === 'vertical' ? 'col-resize' : 'row-resize')
@@ -114,14 +115,14 @@ export const Resizer = ({
       params.start = params.lastCursor = e.pageY
       params.value = value
     }
-  }
+  }, [handleMouseMove, handleMouseUp, direction, cursor, value])
 
   useEffect(() => {
     ref.current.addEventListener('mousedown', handleMouseDown)
     return () => {
       ref.current.removeEventListener('mousedown', handleMouseDown)
     }
-  }, [value])
+  }, [value, handleMouseDown])
 
   return (
     <StyledSizer

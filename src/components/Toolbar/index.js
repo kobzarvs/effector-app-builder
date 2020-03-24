@@ -1,5 +1,5 @@
 import React, {useCallback} from 'react'
-import {Button, Menu} from 'antd'
+import {Button, Divider, Menu} from 'antd'
 import {RedoOutlined, UndoOutlined} from '@ant-design/icons'
 import {$savedStatus} from '../../stores/model/state'
 import {useStore} from 'effector-react'
@@ -30,17 +30,17 @@ export const Toolbar = () => {
       {/*    File <DownOutlined/>*/}
       {/*  </Button>*/}
       {/*</Dropdown>*/}
-      <div>
+      <Button.Group>
         <Button>New</Button>
         <Button>Open</Button>
         <Button>Import</Button>
         <Button>Export</Button>
         <Button>Build NPM</Button>
-        {' '}
+        <div style={{display: 'inline-block', width: 5}} />
         <Button icon={<UndoOutlined style={{color: 'blue'}} />}>Undo</Button>
         <Button icon={<RedoOutlined style={{color: 'blue'}} />}>Redo</Button>
-      </div>
-      <div>
+      </Button.Group>
+      <Button.Group>
         <Button onClick={loadModel}
                 disabled={loadPending || savePending}
                 loading={loadPending}
@@ -54,7 +54,7 @@ export const Toolbar = () => {
         >
           Save
         </Button>
-      </div>
+      </Button.Group>
     </div>
   )
 }

@@ -1,24 +1,17 @@
-import {attach, createEffect, merge} from 'effector'
+import {createStore, forward} from 'effector'
 import {$model, $savedStatus} from './state'
-import {onContextMenuSelected, submitItem} from './index'
 import {message} from 'antd'
+import {modelChanged, shouldRecalcTree} from './index'
+import {throttle} from 'lodash'
+import {attachStore} from '../effector-addon'
 
 
 export const MODEL_KEY = 'eap-model'
-
-const attachStore = ({source, effect, handler}) => {
-  return attach({
-    effect: createEffect({handler}),
-    source,
-    mapParams: (params, source) => ({params, source}),
-  })
-}
 
 export const saveModel = attachStore({
   source: $model,
   handler: async ({params, source}) => {
     params = typeof params === 'string' ? params : MODEL_KEY
-    console.log('save', params)
     try {
       localStorage.setItem(params, JSON.stringify(source))
     } catch (e) {
@@ -27,7 +20,7 @@ export const saveModel = attachStore({
     }
     let resolver
     const promise = new Promise(r => resolver = r)
-    setTimeout(() => resolver(true), 2000)
+    setTimeout(() => resolver(true), 250)
     return promise
   },
 })
@@ -44,18 +37,19 @@ export const loadModel = attachStore({
     }
     let resolver
     const promise = new Promise(r => resolver = r)
-    setTimeout(() => resolver(loadedModel || source), 2000)
+    setTimeout(() => resolver(loadedModel || source), 250)
     return promise
   },
 })
 
-$model
-  .on(loadModel.doneData, (state, data) => data || state)
+forward({
+  from: loadModel.doneData,
+  to: [$model, shouldRecalcTree],
+})
 
 $savedStatus
-  .on(merge([loadModel.done, saveModel.done, loadModel.pending, saveModel.pending]), () => true)
+  .on(loadModel.done, () => true)
   .on(saveModel.pending, (_, pending) => !pending)
-  .on(merge([onContextMenuSelected, submitItem]), () => false)
+  .on(modelChanged, () => false)
 
-window.model = $model
-loadModel('eap-model')
+loadModel(MODEL_KEY)

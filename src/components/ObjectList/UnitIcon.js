@@ -1,5 +1,7 @@
 import React from 'react'
 import {
+  CodepenOutlined,
+  FileTextOutlined,
   ApartmentOutlined,
   AppstoreOutlined,
   DropboxOutlined,
@@ -37,6 +39,7 @@ export const UnitIcon = ({unit = 'model', color, style = {}}) => {
     watch: <EyeOutlined style={style} />,
     on: <ThunderboltOutlined style={style} />,
     deps: <LinkOutlined style={style} />,
-    function: <PlayCircleOutlined style={style} />,
+    function: <FileTextOutlined style={style} />,
+    // function: <CodepenOutlined style={style} />,
   }[unit]
 }

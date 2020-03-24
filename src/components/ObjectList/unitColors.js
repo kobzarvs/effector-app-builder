@@ -13,4 +13,5 @@ export const unitColors = {
   map: 'darkgreen',
   store: '#1890ff',
   function: '#888',
+  deps: 'blue',
 }

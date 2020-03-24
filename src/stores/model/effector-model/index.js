@@ -1,12 +1,15 @@
-import {v4 as uuidv4} from 'uuid'
 import {keys, omit, values} from 'ramda'
 import {createModel} from './createModel'
+import {removeUnit} from '../index'
+
 
 export const DIVIDER = {name: 'divider', type: 'divider'}
 export const getNewName = (base, data) => {
   const dblNames = values(data).reduce((acc, item) => item.name.startsWith(base) ? acc + 1 : acc, 0)
   return `${base}${dblNames + 1}`
 }
+
+export const remove = ({item}) => removeUnit({item})
 
 export const effectorTreeModel = [
   {
@@ -40,4 +43,5 @@ const flattenBy = ({tree, by, parent, result = {}}) => {
 }
 
 export const effectorModel = flattenBy({tree: effectorTreeModel, by: 'cmd'})
+effectorModel['root.createModel'].cmd.unshift('root.createModel')
 console.log(effectorModel)

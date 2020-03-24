@@ -1,7 +1,5 @@
 import {v4 as uuidv4} from 'uuid'
 import {getNewName} from './index'
-import {createEventModel} from './createEventModel'
-import {createStoreModel} from './createStoreModel'
 
 
 export const createEffectModel = () => ({
