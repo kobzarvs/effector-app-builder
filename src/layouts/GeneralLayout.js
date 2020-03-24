@@ -1,33 +1,74 @@
 import React from 'react'
-import {Button, Layout, Menu, Typography} from 'antd'
-import {UserOutlined} from '@ant-design/icons'
-import {ObjectList} from '../components/ObjectList'
+import {Layout} from 'antd'
+import {ThunderboltOutlined, UserOutlined} from '@ant-design/icons'
+import {ProjectTree} from '../components/ObjectList'
 import {Toolbar} from '../components/Toolbar'
 import {useStore} from 'effector-react'
-import {$rightSider} from '../stores/layout/state'
-import {toggleRightSider} from '../stores/layout'
+import {$leftSiderWidth, $rightSider} from '../stores/layout/state'
+import {setLeftSiderWidth} from '../stores/layout'
 import {EditObject} from '../components/EditObject'
+import {Resizer} from '../components/Resizer'
+import styled from '@xstyled/styled-components'
 
 
-const {SubMenu} = Menu
 const {Header, Content, Sider} = Layout
+
+const Version = styled.span`
+  font-size: 14px;
+  position: absolute;
+  top: -7px;
+  right: -75px;
+  color: yellow;
+`
 
 export const GeneralLayout = ({children}) => {
   const rightSider = useStore($rightSider)
+  const leftSiderWidth = useStore($leftSiderWidth)
 
   return (
     <Layout>
       <Header className="header">
-        <div style={{ fontSize: '1.5em' }}>Effector App Builder</div>
+        <div style={{fontSize: '1.5em', position: 'relative', width: 'auto'}}>
+          <ThunderboltOutlined />
+          <span style={{margin: '0 5px'}}>Effector App Builder</span>
+          <Version>(alpha ver.)</Version>
+        </div>
         <div>
-          <UserOutlined style={{ marginRight: 5 }}/>
+          <UserOutlined style={{marginRight: 5}} />
           example@gmail.com
         </div>
       </Header>
-      <Toolbar/>
+      <Toolbar />
       <Layout>
-        <Sider width={500} className="sider">
-          <ObjectList/>
+        <Sider width={leftSiderWidth} className="left-sider">
+          <div style={{
+            width: '100%',
+            height: '100%',
+            // border: '2px solid red',
+            display: 'flex',
+            flexFlow: 'row nowrap',
+            // justifyContent: 'stretch',
+            // alignItems: 'stretch',
+            position: 'relative',
+            padding: 0,
+          }}>
+            {/*<div style={{flex: '0 0 6px', background: 'blue', height: '100%'}} />*/}
+            <ProjectTree style={{
+              flex: `0 1 ${leftSiderWidth - 7}px`,
+              height: '100%',
+              width: leftSiderWidth - 7,
+            }} />
+            <Resizer
+              color="#ddd"
+              border="#aaa"
+              direction="vertical"
+              value={leftSiderWidth}
+              min={400}
+              max={window.innerWidth - 1}
+              onResize={newWidth => setLeftSiderWidth(newWidth)}
+              save="left-sider-width"
+            />
+          </div>
         </Sider>
         <Layout>
           <Content
@@ -43,7 +84,7 @@ export const GeneralLayout = ({children}) => {
           </Content>
         </Layout>
         <Sider width={400} className="right-sider" collapsed={!rightSider} collapsedWidth={0}>
-          <EditObject/>
+          {rightSider && <EditObject />}
         </Sider>
       </Layout>
     </Layout>

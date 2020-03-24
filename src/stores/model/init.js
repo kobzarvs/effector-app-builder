@@ -1,26 +1,60 @@
-import {sample} from 'effector'
+import {merge, sample} from 'effector'
 import {$model, $selectedObject} from './state'
-import {selectObject} from './index'
+import {onContextMenuSelected, resetModel, selectObject, submitItem} from './index'
+import {keys, path, pathOr} from 'ramda'
+import './persistModel'
+import {flatData, sampleDeps, unitsSortOrder} from './helpers'
+import {effectorModel} from './effector-model'
+import {loadModel, saveModel} from './persistModel'
 
-
-const flatData = (data, result = {}, parent) => {
-  return data.reduce((acc, item) => {
-    const {children, ...other} = item
-
-    acc[item.id] = other
-    acc[item.id].parent = parent
-
-    if (children) {
-      flatData(children, acc, item)
-    }
-
-    return acc
-  }, result)
-}
 
 export const $flattenModel = $model.map(model => flatData(model))
 
-const sampleDeps = ['source', 'target', 'clock']
+$flattenModel
+  // .on(onContextMenuSelected, (data, {item, menuId}) => {
+  //   // console.log('context', menuId, item, data)
+  // })
+  .on(submitItem, (state, {id, values}) => {
+    state[id].params = pathOr({}, ['params'], state[id])
+    keys(values).forEach(key => state[id].params[key] = values[key])
+    if (values.name) state[id].name = values.name
+  })
+
+sample({
+  source: $flattenModel,
+  clock: onContextMenuSelected,
+  target: selectObject,
+  fn: (data, {item, menuId}) => {
+    const run = path([menuId, 'run'], effectorModel)
+    if (run) {
+      const {item: newItem} = run({parent: item, data})
+      console.log('newItem', newItem, data)
+      return {id: newItem.id}
+    }
+  },
+})
+
+$flattenModel.updates.watch(state => console.log('flattenModel', state))
+
+$model
+  .reset(resetModel)
+  .on(merge([onContextMenuSelected, submitItem]), (model) => {
+    model[0].children.sort((a, b) => {
+      return a.name.toLowerCase() < b.name.toLowerCase()
+        ? -1
+        : a.name.toLowerCase() > b.name.toLowerCase()
+          ? 1
+          : 0
+    })
+    model[0].children.forEach(m => {
+      m.children.sort((a, b) => {
+        const pa = unitsSortOrder[a.context] || 10
+        const pb = unitsSortOrder[b.context] || 10
+        return pa - pb
+      })
+    })
+    return [...model]
+  })
 
 export const $taggedModel = $flattenModel.map(model => {
   const items = Object.values(model)
@@ -70,15 +104,39 @@ export const $taggedModel = $flattenModel.map(model => {
   }, {})
 })
 
-$taggedModel.watch(console.log)
+// $taggedModel.watch(console.log)
 
 
 sample({
   source: $flattenModel,
   clock: selectObject,
-  fn: (model, id) => {
+  fn: (flattenModel, {id, item}) => {
     console.log('selected', id)
-    return model[id]
+    if (!id && !item && !item.id) return
+    return flattenModel[id || item.id]
   },
   target: $selectedObject,
 })
+
+
+window.api = {
+  ...window.api,
+  model: {
+    stores: {
+      $model,
+      $flattenModel,
+      $taggedModel,
+      $selectedObject,
+    },
+    events: {
+      selectObject,
+      onContextMenuSelected,
+      submitItem,
+      resetModel,
+    },
+    effects: {
+      loadModel,
+      saveModel,
+    }
+  },
+}

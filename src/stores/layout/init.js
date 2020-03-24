@@ -1,5 +1,5 @@
-import {closeRightSider, openRightSider, toggleRightSider, toggleShowDeps} from './index'
-import {$rightSider, $showDeps} from './state'
+import {closeRightSider, openRightSider, setLeftSiderWidth, toggleRightSider, toggleShowDeps} from './index'
+import {$leftSiderWidth, $rightSider, $showDeps} from './state'
 import {selectObject} from '../model'
 
 
@@ -11,3 +11,6 @@ $rightSider
 
 $showDeps
   .on(toggleShowDeps, state => !state)
+
+$leftSiderWidth
+  .on(setLeftSiderWidth, (state, width) => width)

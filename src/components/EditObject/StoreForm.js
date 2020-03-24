@@ -1,6 +1,10 @@
-import React, {useState} from 'react'
-import {Form, Input, Button, Checkbox, Table} from 'antd'
+import React, {useEffect, useState} from 'react'
+import {Form, Input, Button, Checkbox, Table, message} from 'antd'
 import {closeRightSider} from '../../stores/layout'
+import {FormActions} from './assets/FormActions'
+import {onFinishFailed} from './assets/helpers'
+import {submitItem} from '../../stores/model'
+import {pathOr} from 'ramda'
 
 
 // const columns = [
@@ -37,25 +41,68 @@ import {closeRightSider} from '../../stores/layout'
 // ]
 
 export const StoreForm = ({data}) => {
-  const [undefinedValue, setUndefinedValue] = useState(typeof data.value === 'undefined')
+  const [form] = Form.useForm()
+  let defaultValue
 
-  const handleChangeUndefinedValue = e => setUndefinedValue(e.target.checked)
-
-  const onFinish = values => {
-    console.log('Success:', values)
+  try {
+    defaultValue = JSON.stringify(pathOr(null, ['params', 'defaultValue'], data), null, 2)
+  } catch (e) {
+    defaultValue = 'null'
   }
 
-  const onFinishFailed = errorInfo => {
-    console.log('Failed:', errorInfo)
+  const [value, setValue] = useState(defaultValue)
+  const [undefinedValue, setUndefinedValue] = useState(defaultValue === 'null')
+
+  const handleChangeUndefinedValue = e => {
+    setUndefinedValue(e.target.checked)
+    const newValue = e.target.checked ? 'null' : (value !== 'null' ? value : '\'\'')
+    form.setFieldsValue({defaultValue: newValue})
+  }
+
+  const handlePretty = () => {
+    try {
+      // eslint-disable-next-line no-eval
+      eval(`defaultValue=${form.getFieldValue('defaultValue')}`)
+      const newValue = JSON.stringify(defaultValue, null, 2)
+      form.setFieldsValue({defaultValue: newValue})
+      setValue(newValue)
+    } catch(e) {
+      // console.error(e)
+      message.error('Bad JSON format for defaultValue!')
+    }
+  }
+
+  const onFinish = formData => {
+    let value
+    try {
+      // eslint-disable-next-line no-eval
+      value = eval(`value=${form.getFieldValue('defaultValue')}`)
+      const values = {
+        name: formData.name,
+        defaultValue: value,
+        config: {
+          name: formData.name
+        }
+      }
+      console.log('Success:', data.id, formData, values)
+      submitItem({
+        id: data.id,
+        values
+      })
+    } catch(e) {
+      // console.error(e)
+      message.error('Error submit store!')
+    }
   }
 
   return (
     <Form
+      form={form}
       layout="vertical"
       name="basic"
       initialValues={{
-        defaultValue: JSON.stringify(data.value, null, 2),
-        name: data.title,
+        defaultValue,
+        name: data.name,
         undefinedValue,
       }}
       onFinish={onFinish}
@@ -66,11 +113,11 @@ export const StoreForm = ({data}) => {
         name="name"
         rules={[
           {
-            required: false,
+            required: true,
           },
         ]}
       >
-        <Input/>
+        <Input />
       </Form.Item>
 
       <Form.Item
@@ -83,32 +130,37 @@ export const StoreForm = ({data}) => {
           },
         ]}
       >
-        <Input.TextArea style={{fontFamily: 'monospace'}} disabled={undefinedValue} rows={6}/>
+        <Input.TextArea style={{fontFamily: 'monospace'}} disabled={undefinedValue} rows={6} />
       </Form.Item>
 
-      <Form.Item name="undefinedValue" valuePropName="checked">
-        <Checkbox onChange={handleChangeUndefinedValue}>undefined value</Checkbox>
-      </Form.Item>
-
-      <Form.Item
-        label="Dependencies"
-      >
-        {/*<Table columns={columns} dataSource={dataSource}/>*/}
-      </Form.Item>
-
-      <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-        <Form.Item>
-          <Button onClick={closeRightSider}>
-            Cancel
-          </Button>
+      <div style={{
+        marginTop: -8,
+        display: 'flex',
+        justifyContent: 'space-between',
+      }}>
+        <Form.Item
+          name="undefinedValue"
+          valuePropName="checked"
+        >
+          <Checkbox onChange={handleChangeUndefinedValue}>is NULL</Checkbox>
         </Form.Item>
-        <div style={{width: 10}}/>
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Submit
-          </Button>
-        </Form.Item>
+        <Button
+          type="primary"
+          size="small"
+          disabled={undefinedValue}
+          onClick={handlePretty}
+        >
+          Pretty
+        </Button>
       </div>
+
+      {/*<Form.Item*/}
+      {/*  label="Dependencies"*/}
+      {/*>*/}
+      {/*  /!*<Table columns={columns} dataSource={dataSource}/>*!/*/}
+      {/*</Form.Item>*/}
+
+      <FormActions />
     </Form>
   )
 }

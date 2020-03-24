@@ -43,12 +43,12 @@ $header-height: 40px;
   }
 }
 
-.sider {
+.left-sider {
   background-color: white;
   height: calc(100vh - 73px);
   border-right: 1px solid #ccc;
   box-shadow: 2px 4px 6px rgba(0, 0, 0, .15);
-  overflow: auto;
+  overflow: hidden;
 }
 
 .right-sider {
@@ -85,4 +85,8 @@ $header-height: 40px;
     background-color: var(--primary) !important;
     color: white;
   }
+}
+
+.ant-layout-sider {
+  transition: none !important;
 }

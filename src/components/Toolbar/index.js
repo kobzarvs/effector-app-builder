@@ -1,7 +1,9 @@
 import React, {useCallback} from 'react'
-import {Button, Dropdown, Menu} from 'antd'
-import {DownOutlined, UndoOutlined, RedoOutlined} from '@ant-design/icons'
-import {toggleShowDeps} from '../../stores/layout'
+import {Button, Menu} from 'antd'
+import {RedoOutlined, UndoOutlined} from '@ant-design/icons'
+import {$savedStatus} from '../../stores/model/state'
+import {useStore} from 'effector-react'
+import {saveModel, loadModel} from '../../stores/model/persistModel'
 
 
 const AddMenu = ({onSelect}) => (
@@ -13,8 +15,12 @@ const AddMenu = ({onSelect}) => (
 )
 
 export const Toolbar = () => {
+  const savePending = useStore(saveModel.pending)
+  const loadPending = useStore(loadModel.pending)
+  const savedStatus = useStore($savedStatus)
+
   const handleMenuClick = useCallback((value) => {
-    console.log('selected', value)
+    console.log('Menu selected', value)
   }, [])
 
   return (
@@ -31,12 +37,23 @@ export const Toolbar = () => {
         <Button>Export</Button>
         <Button>Build NPM</Button>
         {' '}
-        <Button icon={<UndoOutlined style={{color: 'blue'}}/>}>Undo</Button>
-        <Button icon={<RedoOutlined style={{color: 'blue'}}/>}>Redo</Button>
+        <Button icon={<UndoOutlined style={{color: 'blue'}} />}>Undo</Button>
+        <Button icon={<RedoOutlined style={{color: 'blue'}} />}>Redo</Button>
       </div>
       <div>
-        <Button type="danger">Clear</Button>
-        <Button type="primary">Save</Button>
+        <Button onClick={loadModel}
+                disabled={loadPending || savePending}
+                loading={loadPending}
+        >
+          Reload
+        </Button>
+        <Button type="primary"
+                onClick={saveModel}
+                disabled={savedStatus}
+                loading={savePending}
+        >
+          Save
+        </Button>
       </div>
     </div>
   )

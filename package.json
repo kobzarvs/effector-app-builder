@@ -12,11 +12,12 @@
     "babel-plugin-import": "^1.13.0",
     "babel-plugin-transform-rename-import": "^2.3.0",
     "customize-cra": "^0.9.1",
-    "effector": "^20.12.2",
+    "effector": "^20.13.4",
     "effector-logger": "^0.5.0",
     "effector-react": "^20.6.3",
     "eslint": "^6.8.0",
     "formik": "^2.1.4",
+    "lodash": "^4.17.15",
     "node-sass": "^4.13.1",
     "ramda": "^0.27.0",
     "react": "^16.13.0",
@@ -24,7 +25,8 @@
     "react-dom": "^16.13.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.0",
-    "styled-components": "^5.0.1"
+    "styled-components": "^5.0.1",
+    "uuid": "^7.0.2"
   },
   "scripts": {
     "start": "react-app-rewired start",
