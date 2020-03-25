@@ -11,30 +11,17 @@ export const attachStore = ({source, effect, handler}) => {
 }
 
 export const createLocalStore = (name, initialState, options = {}) => {
-  const {interval = 250, prevent = true} = options
+  const {interval = 250, prevent = false} = options
 
-  createLocalStore.preventLeavePage = (e) => {
-    e.preventDefault()
-
-    if (createLocalStore.stores.some(store => store.unsavedState !== undefined)) {
-      e.returnValue = 'There is pending work. Sure you want to leave?'
-      setTimeout(() => {
-        createLocalStore.stores.forEach(store => {
-          store.unsavedState !== undefined && store.save(store.storageKey, store.unsavedState)
-        })
-      })
-      return e.returnValue
-    }
-  }
-
-  if (prevent && !createLocalStore.preventedLeavePage) {
+  if (!createLocalStore.preventedLeavePage) {
     window.addEventListener('beforeunload', createLocalStore.preventLeavePage)
     createLocalStore.preventedLeavePage = true
   }
 
   const load = (key) => {
     try {
-      return JSON.parse(localStorage.getItem(key) || initialState)
+      const result = localStorage.getItem(key)
+      return result === null ? initialState : JSON.parse(result)
     } catch (e) {
       console.error(`Can't load store '${name}' from localStorage.`)
     }
@@ -43,6 +30,7 @@ export const createLocalStore = (name, initialState, options = {}) => {
 
   const store = createStore(load(name), {name})
   store.storageKey = name
+  store.prevent = prevent
   store.save = (key, value) => {
     try {
       localStorage.setItem(key, JSON.stringify(value))
@@ -54,10 +42,8 @@ export const createLocalStore = (name, initialState, options = {}) => {
 
   const throttledSave = throttle(store.save, interval)
 
-  if (prevent) {
-    createLocalStore.stores = createLocalStore.stores || []
-    createLocalStore.stores.push(store)
-  }
+  createLocalStore.stores = createLocalStore.stores || []
+  createLocalStore.stores.push(store)
 
   store.watch(state => {
     store.unsavedState = state
@@ -67,4 +53,18 @@ export const createLocalStore = (name, initialState, options = {}) => {
   return store
 }
 
-window.createLocalStore = createLocalStore
+createLocalStore.preventLeavePage = (e) => {
+  e.preventDefault()
+
+  if (createLocalStore.stores.some(store => store.prevent && store.unsavedState !== undefined)) {
+    e.returnValue = 'There is pending work. Sure you want to leave?'
+  }
+
+  setTimeout(() => {
+    createLocalStore.stores.forEach(store => {
+      store.unsavedState !== undefined && store.save(store.storageKey, store.unsavedState)
+    })
+  })
+
+  return e.returnValue
+}
