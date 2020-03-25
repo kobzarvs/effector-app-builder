@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.0//EN' 'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg fill-opacity="1" xmlns:xlink="http://www.w3.org/1999/xlink" color-rendering="auto" color-interpolation="auto" text-rendering="auto" stroke="black" stroke-linecap="square" stroke-miterlimit="10" shape-rendering="auto" stroke-opacity="1" fill="black" stroke-dasharray="none" font-weight="normal" stroke-width="1" xmlns="http://www.w3.org/2000/svg" font-family="&apos;Dialog&apos;" font-style="normal" stroke-linejoin="miter" font-size="12" stroke-dashoffset="0" image-rendering="auto">
+  <!--Unicode Character 'FINITE PART INTEGRAL' (U+2A0D)-->
+  <defs id="genericDefs" />
+  <g>
+    <g>
+      <path d="M55.125 401.625 Q39.9375 401.625 27.8438 396 Q15.75 390.375 12.9375 381.9375 Q12.0938 379.125 12.0938 378.2812 Q12.0938 374.0625 15.3281 370.9688 Q18.5625 367.875 26.4375 367.875 Q36.5625 368.4375 42.4688 376.3125 Q48.375 384.1875 55.125 384.1875 Q65.25 384.1875 72.2812 376.875 Q79.3125 369.5625 79.3125 357.75 L79.3125 274.5 L12.9375 274.5 L12.9375 259.875 L79.3125 259.875 L79.3125 176.625 Q79.3125 158.625 90.9844 145.6875 Q102.6562 132.75 126 132.75 Q141.1875 132.75 153.2812 138.375 Q165.375 144 168.1875 152.4375 Q169.0312 155.25 169.0312 156.0938 Q169.0312 160.3125 165.7969 163.4062 Q162.5625 166.5 154.6875 166.5 Q144.5625 165.9375 138.6562 158.0625 Q132.75 150.1875 126 150.1875 Q115.875 150.1875 108.8438 157.5 Q101.8125 164.8125 101.8125 176.625 L101.8125 259.875 L168.1875 259.875 L168.1875 274.5 L101.8125 274.5 L101.8125 357.75 Q101.8125 375.75 90.1406 388.6875 Q78.4688 401.625 55.125 401.625 Z" stroke="none" />
+    </g>
+  </g>
+</svg>
