@@ -56,6 +56,8 @@ $header-height: 40px;
 }
 
 .right-sider {
+  right: 0;
+  position: absolute;
   background-color: white;
   height: calc(100vh - 73px);
   border-left: 1px solid #aaa;
@@ -96,4 +98,14 @@ $header-height: 40px;
 
 .ant-layout-sider {
   transition: none !important;
+}
+
+.logo-href {
+  color: white;
+  transition: opacity .25s;
+  opacity: .8;
+  &:hover {
+    color: white;
+    opacity: 1;
+  }
 }

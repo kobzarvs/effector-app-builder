@@ -46,11 +46,17 @@ export const GeneralLayout = ({children}) => {
   return (
     <Layout>
       <Header className="header">
-        <div style={{fontSize: '1.5em', position: 'relative', width: 'auto'}}>
-          <ThunderboltOutlined />
-          <span style={{margin: '0 5px'}}>Effector App Builder</span>
-          <Version>(alpha ver.)</Version>
-        </div>
+        <a className="logo-href"
+           href="https://github.com/kobzarvs/effector-app-builder"
+           rel="noopener noreferrer"
+           target="_blank"
+        >
+          <div style={{fontSize: '1.5em', position: 'relative', width: 'auto'}}>
+            <ThunderboltOutlined />
+            <span style={{margin: '0 5px'}}>Effector App Builder</span>
+            <Version>(alpha ver.)</Version>
+          </div>
+        </a>
         <div>
           <UserOutlined style={{marginRight: 5}} />
           example@gmail.com
