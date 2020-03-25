@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react'
 import {Layout} from 'antd'
 import {ThunderboltOutlined, UserOutlined} from '@ant-design/icons'
-import {ProjectTree} from '../components/ObjectList'
+import {ProjectTree} from '../components/ProjectTree'
 import {Toolbar} from '../components/Toolbar'
 import {useStore} from 'effector-react'
 import {$leftSidebarMinStatus, $leftSiderWidth, $rightSider} from '../stores/layout/state'

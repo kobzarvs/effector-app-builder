@@ -1,18 +1,11 @@
 import React, {useCallback} from 'react'
-import {Button, Divider, Menu} from 'antd'
-import {RedoOutlined, UndoOutlined} from '@ant-design/icons'
+import {Modal, Button, message, Popconfirm} from 'antd'
+import {ExclamationCircleOutlined, RedoOutlined, UndoOutlined} from '@ant-design/icons'
 import {$savedStatus} from '../../stores/model/state'
 import {useStore} from 'effector-react'
-import {saveModel, loadModel} from '../../stores/model/persistModel'
+import {loadModel, saveModel} from '../../stores/model/persistModel'
+import {resetModel} from '../../stores/model'
 
-
-const AddMenu = ({onSelect}) => (
-  <Menu onSelect={onSelect}>
-    <Menu.Item key="store">Store</Menu.Item>
-    <Menu.Item key="event">Event</Menu.Item>
-    <Menu.Item key="effect">Effect</Menu.Item>
-  </Menu>
-)
 
 export const Toolbar = () => {
   const savePending = useStore(saveModel.pending)
@@ -25,13 +18,21 @@ export const Toolbar = () => {
 
   return (
     <div className="toolbar">
-      {/*<Dropdown overlay={<AddMenu onSelect={handleMenuClick} />}>*/}
-      {/*  <Button>*/}
-      {/*    File <DownOutlined/>*/}
-      {/*  </Button>*/}
-      {/*</Dropdown>*/}
       <Button.Group>
-        <Button>New</Button>
+        <Button onClick={() => Modal.confirm({
+          title: 'Create new Project?',
+          icon: <ExclamationCircleOutlined />,
+          content: 'The current project will be destroyed',
+          okText: 'Yes',
+          okType: 'danger',
+          cancelText: 'No',
+          onOk() {
+            resetModel()
+            message.success('The new project created a successful')
+          },
+        })}>
+          New
+        </Button>
         <Button>Open</Button>
         <Button>Import</Button>
         <Button>Export</Button>

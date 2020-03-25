@@ -4,7 +4,7 @@ import {
   setLeftSiderWidth, toggleUnitsFilter,
   toggleLeftSidebar,
   toggleRightSider,
-  toggleShowDeps, setUnitsFilter, setExpandedKeys,
+  toggleShowDeps, setUnitsFilter, setExpandedKeys, selectObject,
 } from './index'
 import {
   $selectedObject,
@@ -15,6 +15,7 @@ import {
   $unitsFilter,
   $expandedKeys,
 } from './state'
+import {newUnitCreated} from '../model'
 
 
 $rightSider
@@ -40,3 +41,7 @@ $unitsFilter
 
 $expandedKeys
   .on(setExpandedKeys, (_, keys) => keys)
+
+$selectedObject
+  .on(newUnitCreated, (_, item) => item.id)
+  .on(selectObject, (_, id) => id)

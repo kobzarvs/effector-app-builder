@@ -1,8 +1,7 @@
-import {createStore, forward} from 'effector'
+import {forward} from 'effector'
 import {$model, $savedStatus} from './state'
 import {message} from 'antd'
 import {modelChanged, shouldRecalcTree} from './index'
-import {throttle} from 'lodash'
 import {attachStore} from '../effector-addon'
 
 

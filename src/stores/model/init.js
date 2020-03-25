@@ -1,7 +1,7 @@
-import {forward, merge, sample} from 'effector'
+//@flow
+import {forward, sample} from 'effector'
 import {message} from 'antd'
 import {$model} from './state'
-import {$selectedObject} from '../layout/state'
 import {
   modelChanged,
   newUnitCreated,
@@ -14,7 +14,6 @@ import {
 import {keys, path, pathOr} from 'ramda'
 import {flatData, unitsSortOrder} from './helpers'
 import {effectorModel} from './effector-model'
-import {selectObject} from '../layout'
 
 
 export const $flattenModel = $model.map(model => flatData(model))
@@ -44,10 +43,9 @@ sample({
   clock: onContextMenuSelected,
   target: newUnitCreated,
   fn: (data, {item, menuId}) => {
-    const create = path([menuId, 'create'], effectorModel)
-    if (create) {
-      const {item: newItem} = create({parent: item, data})
-      // console.log('newItem', newItem, data)
+    const command = path([menuId, menuId], effectorModel)
+    if (command) {
+      const {item: newItem} = command({parent: item, data})
       return newItem
     }
   },
@@ -131,38 +129,3 @@ $model
 // })
 
 // $taggedModel.watch(console.log)
-
-
-sample({
-  source: $flattenModel,
-  clock: merge([selectObject, newUnitCreated]),
-  fn: (flattenModel, id) => id,
-// {
-//     const result = flattenModel[typeof id === 'object' ? id.id : id]
-//     // console.log('sample selected', result)
-//     return result
-//   },
-  target: $selectedObject,
-})
-
-// window.api = {
-//   ...window.api,
-//   model: {
-//     stores: {
-//       $model,
-//       $flattenModel,
-//       // $taggedModel,
-//       $selectedObject,
-//     },
-//     events: {
-//       selectObject,
-//       onContextMenuSelected,
-//       submitItem,
-//       resetModel,
-//     },
-//     effects: {
-//       loadModel,
-//       saveModel,
-//     },
-//   },
-// }

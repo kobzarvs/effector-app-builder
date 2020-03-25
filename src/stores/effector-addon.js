@@ -1,8 +1,11 @@
+//@flow
+import type {Store} from 'effector'
 import {attach, createEffect, createStore} from 'effector'
 import {throttle} from 'lodash'
 
-
-export const attachStore = ({source, effect, handler}) => {
+//$FlowFixMe
+export function attachStore({source, handler}) {
+  //$FlowFixMe
   return attach({
     effect: createEffect({handler}),
     source,
@@ -10,7 +13,11 @@ export const attachStore = ({source, effect, handler}) => {
   })
 }
 
-export const createLocalStore = (name, initialState, options = {}) => {
+export function createLocalStore<State>(
+  name: string,
+  initialState: State,
+  options?: { interval: number, prevent: boolean } = {},
+): Store<State> {
   const {interval = 250, prevent = false} = options
 
   if (!createLocalStore.preventedLeavePage) {
@@ -18,17 +25,22 @@ export const createLocalStore = (name, initialState, options = {}) => {
     createLocalStore.preventedLeavePage = true
   }
 
-  const load = (key) => {
+  function load(key: string): State {
     try {
-      const result = localStorage.getItem(key)
-      return result === null ? initialState : JSON.parse(result)
+      const result: ?string = localStorage.getItem(key)
+      return result === null || result === undefined ? initialState : JSON.parse(result)
     } catch (e) {
       console.error(`Can't load store '${name}' from localStorage.`)
     }
     return initialState
   }
 
-  const store = createStore(load(name), {name})
+  const store: Store<State> & {
+    storageKey?: string,
+    prevent?: boolean,
+    save?: Function,
+    unsavedState?: State
+  } = createStore<State>(load(name), {name})
   store.storageKey = name
   store.prevent = prevent
   store.save = (key, value) => {
